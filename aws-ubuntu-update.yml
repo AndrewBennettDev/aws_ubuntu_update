@@ -1,0 +1,20 @@
+---
+- name: Update Ubuntu servers on AWS
+  hosts: copy_server_group_here
+  become: yes
+  tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: safe
+
+    - name: Reboot the server if needed
+      command: shutdown -r now
+      async: 0
+      poll: 0
+      become: yes
+      register: reboot_result
+      changed_when: "'System is going down for reboot' in reboot_result.stdout"
